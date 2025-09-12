@@ -1,0 +1,7 @@
+{
+  "name": "Al-Mufakir Al-Saghir (The Little Thinker)",
+  "description": "An AI-powered educational platform for students in Duhok, Kurdistan. It generates mind maps, simplified explanations, and study schedules from lesson content to empower students in their learning journey.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
