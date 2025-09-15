@@ -152,5 +152,6 @@
     "correct_answer_is": "The correct answer is",
     "your_answer": "Your answer",
     "correct_badge": "Correct",
-    "incorrect_badge": "Incorrect"
+    "incorrect_badge": "Incorrect",
+    "error_api_key_missing": "API key is not available. Please check the application settings."
 }

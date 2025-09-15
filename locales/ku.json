@@ -146,5 +146,6 @@
     "correct_answer_is": "وەڵامی ڕاست بریتییە لە",
     "your_answer": "وەڵامی تۆ",
     "correct_badge": "ڕاست",
-    "incorrect_badge": "هەڵە"
+    "incorrect_badge": "هەڵە",
+    "error_api_key_missing": "کلیلی API بەردەست نییە. تکایە ڕێکخستنەکانی ئەپلیکەیشنەکە بپشکنە."
 }

@@ -152,5 +152,6 @@
     "correct_answer_is": "الإجابة الصحيحة هي",
     "your_answer": "إجابتك",
     "correct_badge": "صحيح",
-    "incorrect_badge": "خطأ"
+    "incorrect_badge": "خطأ",
+    "error_api_key_missing": "مفتاح API غير متوفر. يرجى التحقق من إعدادات التطبيق."
 }
