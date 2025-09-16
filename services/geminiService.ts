@@ -2,17 +2,24 @@ import { GoogleGenAI, Type, Content } from "@google/genai";
 import type { LessonAnalysis, ScheduleItem, VideoResult, Language, ChatMessage, Quiz } from '../types';
 import { prompts } from '../locales/prompts';
 
-const API_KEY = process.env.API_KEY;
-let ai: GoogleGenAI | null = null;
+const getApiKey = () => {
+  return process.env.API_KEY || process.env.GEMINI_API_KEY;
+};
 
-if (API_KEY) {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-}
+const getAI = () => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 const checkApiKey = () => {
-  if (!API_KEY || !ai) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
     throw new Error("error_api_key_missing");
   }
+  return getAI();
 };
 
 const fileToGenerativePart = async (file: File) => {
@@ -44,7 +51,11 @@ export const generateChatResponse = async (
   studentGrade: number,
   language: Language
 ): Promise<string> => {
-    checkApiKey();
+    const ai = checkApiKey();
+    if (!ai) {
+        throw new Error("error_api_key_missing");
+    }
+    
     const model = 'gemini-2.5-flash';
     const systemInstruction = prompts.chat[language].systemInstruction(studentAge, studentGrade);
 
@@ -82,7 +93,11 @@ export const generateLessonAnalysis = async (
   studentAge?: number,
   studentGrade?: number,
 ): Promise<LessonAnalysis> => {
-  checkApiKey();
+  const ai = checkApiKey();
+  if (!ai) {
+    throw new Error("error_api_key_missing");
+  }
+  
   const model = 'gemini-2.5-flash';
   const systemInstruction = prompts.lessonAnalysis[language].systemInstruction;
   
@@ -151,7 +166,11 @@ export const generateLessonAnalysis = async (
 
 
 export const searchVideos = async (keywords: string[], language: Language, studentAge?: number): Promise<VideoResult[]> => {
-  checkApiKey();
+  const ai = checkApiKey();
+  if (!ai) {
+    throw new Error("error_api_key_missing");
+  }
+  
   const model = 'gemini-2.5-flash';
   const query = prompts.videoSearch[language].prompt(keywords, studentAge);
 
@@ -189,7 +208,11 @@ export const generateSchedule = async (
   studentAge: number,
   language: Language
 ): Promise<ScheduleItem[]> => {
-    checkApiKey();
+    const ai = checkApiKey();
+    if (!ai) {
+        throw new Error("error_api_key_missing");
+    }
+    
     const model = 'gemini-2.5-flash';
     const systemInstruction = prompts.schedule[language].systemInstruction;
     const prompt = prompts.schedule[language].prompt(studentAge, preferences);
@@ -231,7 +254,11 @@ export const generateSchedule = async (
 };
 
 export const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
-    checkApiKey();
+    const ai = checkApiKey();
+    if (!ai) {
+        throw new Error("error_api_key_missing");
+    }
+    
     const model = 'gemini-2.5-flash';
     const prompt = "Transcribe this audio.";
     
@@ -283,7 +310,11 @@ export const generateQuiz = async (
   studentAge: number,
   studentGrade: number
 ): Promise<Omit<Quiz, 'id' | 'createdAt'>> => {
-    checkApiKey();
+    const ai = checkApiKey();
+    if (!ai) {
+        throw new Error("error_api_key_missing");
+    }
+    
     const model = 'gemini-2.5-flash';
     const systemInstruction = prompts.quizGeneration[language].systemInstruction;
     const prompt = prompts.quizGeneration[language].prompt(lessonContent, studentAge, studentGrade);
