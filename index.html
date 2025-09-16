@@ -26,8 +26,8 @@
     <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.1.1/client",
     "@google/genai": "https://esm.sh/@google/genai@0.14.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
     "react/": "https://aistudiocdn.com/react@^19.1.1/"
@@ -37,6 +37,15 @@
   </head>
   <body class="bg-gray-100 dark:bg-gray-900">
     <div id="root"></div>
+    <script>
+      // Add error handling for module loading
+      window.addEventListener('error', function(e) {
+        console.error('Script error:', e.error);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled promise rejection:', e.reason);
+      });
+    </script>
     <!-- Change script type to text/babel for Babel to transpile it -->
     <script type="text/babel" data-type="module" src="/index.tsx"></script>
     <script>
