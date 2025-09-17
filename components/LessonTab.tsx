@@ -13,6 +13,30 @@ import VoiceNotes from './VoiceNotes';
 import { fetchUrlContent } from '../utils/urlFetcher';
 import { optimizeImage } from '../utils/imageOptimizer';
 
+// Demo lesson analysis for when API is not available
+const getDemoAnalysis = (): LessonAnalysis => ({
+    mindMap: {
+        title: "عرض توضيحي - الدرس",
+        children: [
+            {
+                title: "المفهوم الأول",
+                children: [
+                    { title: "نقطة مهمة 1" },
+                    { title: "نقطة مهمة 2" }
+                ]
+            },
+            {
+                title: "المفهوم الثاني",
+                children: [
+                    { title: "تطبيق عملي" },
+                    { title: "مثال توضيحي" }
+                ]
+            }
+        ]
+    },
+    explanation: "هذا عرض توضيحي لكيفية عمل تحليل الدروس. في النسخة الكاملة مع مفتاح API، يمكن للذكاء الاصطناعي تحليل أي درس وإنشاء خريطة ذهنية مفصلة وشرح مبسط.",
+    keywords: ["عرض توضيحي", "تحليل الدروس", "خريطة ذهنية", "شرح مبسط"]
+});
 type InputType = 'text' | 'image' | 'url';
 
 const LessonTab: React.FC = () => {
@@ -101,19 +125,34 @@ const LessonTab: React.FC = () => {
             }
 
             setLoadingMessageKey('loading_ai_analysis');
-            const result = await generateLessonAnalysis(
-                content,
-                language,
-                activeStudent?.age,
-                activeStudent?.grade
-            );
+            let result: LessonAnalysis;
+            try {
+                result = await generateLessonAnalysis(
+                    content,
+                    language,
+                    activeStudent?.age,
+                    activeStudent?.grade
+                );
+            } catch (apiError) {
+                // If API fails, use demo analysis
+                result = getDemoAnalysis();
+            }
             setAnalysis(result);
             if (result.keywords && result.keywords.length > 0) {
-                const videoResults = await searchVideos(
-                    result.keywords,
-                    language,
-                    activeStudent?.age
-                );
+                let videoResults: VideoResult[] = [];
+                try {
+                    videoResults = await searchVideos(
+                        result.keywords,
+                        language,
+                        activeStudent?.age
+                    );
+                } catch (videoError) {
+                    // Demo videos when API is not available
+                    videoResults = [
+                        { uri: "https://www.youtube.com/watch?v=demo1", title: "فيديو تعليمي توضيحي 1" },
+                        { uri: "https://www.youtube.com/watch?v=demo2", title: "فيديو تعليمي توضيحي 2" }
+                    ];
+                }
                 setVideos(videoResults);
             }
         } catch (err) {

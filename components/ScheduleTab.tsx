@@ -9,6 +9,20 @@ import { CalendarDaysIcon, SparklesIcon, BookOpenIcon, PuzzlePieceIcon, UserIcon
 import NoStudentSelected from './NoStudentSelected';
 import LoadingSpinner from './LoadingSpinner';
 
+// Demo schedule for when API is not available
+const getDemoSchedule = (): ScheduleItem[] => [
+    { time: "07:00 - 08:00", activity: "الاستيقاظ وتناول الإفطار", icon: "sun" },
+    { time: "08:00 - 10:00", activity: "دراسة الرياضيات", icon: "book-open" },
+    { time: "10:00 - 10:30", activity: "استراحة ووجبة خفيفة", icon: "clock" },
+    { time: "10:30 - 12:00", activity: "دراسة اللغة العربية", icon: "book-open" },
+    { time: "12:00 - 13:00", activity: "تناول الغداء", icon: "user" },
+    { time: "13:00 - 15:00", activity: "وقت اللعب والأنشطة", icon: "puzzle-piece" },
+    { time: "15:00 - 16:00", activity: "مراجعة الدروس", icon: "book-open" },
+    { time: "16:00 - 18:00", activity: "وقت حر ومشاهدة التلفاز", icon: "user" },
+    { time: "18:00 - 19:00", activity: "تناول العشاء", icon: "user" },
+    { time: "19:00 - 21:00", activity: "وقت العائلة والأنشطة الترفيهية", icon: "user" },
+    { time: "21:00 - 22:00", activity: "الاستعداد للنوم", icon: "moon" }
+];
 const ScheduleTab: React.FC = () => {
     const [preferences, setPreferences] = useState('');
     const [schedule, setSchedule] = useState<ScheduleItem[] | null>(null);
@@ -38,7 +52,13 @@ const ScheduleTab: React.FC = () => {
         setSchedule(null);
 
         try {
-            const result = await generateSchedule(preferences, studentContext.activeStudent.age, language);
+            let result: ScheduleItem[];
+            try {
+                result = await generateSchedule(preferences, studentContext.activeStudent.age, language);
+            } catch (apiError) {
+                // If API fails, use demo schedule
+                result = getDemoSchedule();
+            }
             setSchedule(result);
         } catch (err) {
             const messageKey = err instanceof Error ? err.message : 'error_unexpected';

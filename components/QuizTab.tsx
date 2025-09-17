@@ -9,6 +9,30 @@ import { generateQuiz } from '../services/geminiService';
 import { QuestionMarkCircleIcon, PlusCircleIcon, SparklesIcon, BookOpenIcon, CheckIcon, XMarkIcon, TrashIcon } from './icons/Icons';
 import LoadingSpinner from './LoadingSpinner';
 
+// Demo quiz for when API is not available
+const getDemoQuiz = (): Omit<Quiz, 'id' | 'createdAt'> => ({
+    topic: "عرض توضيحي - اختبار الرياضيات",
+    questions: [
+        {
+            questionText: "كم يساوي 5 + 3؟",
+            answers: [
+                { text: "7", isCorrect: false },
+                { text: "8", isCorrect: true },
+                { text: "9", isCorrect: false },
+                { text: "10", isCorrect: false }
+            ]
+        },
+        {
+            questionText: "ما هو ناتج 4 × 2؟",
+            answers: [
+                { text: "6", isCorrect: false },
+                { text: "8", isCorrect: true },
+                { text: "10", isCorrect: false },
+                { text: "12", isCorrect: false }
+            ]
+        }
+    ]
+});
 type View = 'list' | 'create' | 'take' | 'results';
 
 const QuizTab: React.FC = () => {
@@ -71,7 +95,13 @@ const QuizTab: React.FC = () => {
         setGeneratedQuiz(null);
 
         try {
-            const result = await generateQuiz(lessonText, language, activeStudent.age, activeStudent.grade);
+            let result: Omit<Quiz, 'id' | 'createdAt'>;
+            try {
+                result = await generateQuiz(lessonText, language, activeStudent.age, activeStudent.grade);
+            } catch (apiError) {
+                // If API fails, use demo quiz
+                result = getDemoQuiz();
+            }
             setGeneratedQuiz(result);
         } catch (err) {
             const messageKey = err instanceof Error ? err.message : 'error_unexpected';

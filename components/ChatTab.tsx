@@ -10,6 +10,17 @@ import { optimizeImage } from '../utils/imageOptimizer';
 import { UserIcon, PaperClipIcon, PaperAirplaneIcon, XCircleIcon } from './icons/Icons';
 import LoadingSpinner from './LoadingSpinner';
 
+// Demo responses for when API is not available
+const getDemoResponse = (message: string): string => {
+    const lowerMessage = message.toLowerCase();
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('سلام') || lowerMessage.includes('مرحبا')) {
+        return "مرحباً! أنا المفكر الصغير. هذا عرض توضيحي للتطبيق. للحصول على إجابات حقيقية من الذكاء الاصطناعي، يحتاج المطور إلى إضافة مفتاح API.";
+    }
+    if (lowerMessage.includes('math') || lowerMessage.includes('رياضيات') || lowerMessage.includes('حساب')) {
+        return "الرياضيات موضوع رائع! يمكنني مساعدتك في الجمع والطرح والضرب والقسمة. هذا مثال على كيف يمكنني المساعدة عندما يكون لدي وصول كامل للذكاء الاصطناعي.";
+    }
+    return "شكراً لك على رسالتك! هذا عرض توضيحي للتطبيق. في النسخة الكاملة مع مفتاح API، يمكنني الإجابة على جميع أسئلتك التعليمية ومساعدتك في دروسك.";
+};
 const ChatTab: React.FC = () => {
     const studentContext = useContext(StudentContext);
     const { language, t } = useContext(LanguageContext);
@@ -121,13 +132,19 @@ const ChatTab: React.FC = () => {
         removeImage();
 
         try {
-            const responseText = await generateChatResponse(
-                updatedMessages,
-                { text: inputText, image: optimizedImageFile || undefined },
-                activeStudent.age,
-                activeStudent.grade,
-                language
-            );
+            let responseText: string;
+            try {
+                responseText = await generateChatResponse(
+                    updatedMessages,
+                    { text: inputText, image: optimizedImageFile || undefined },
+                    activeStudent.age,
+                    activeStudent.grade,
+                    language
+                );
+            } catch (apiError) {
+                // If API fails, use demo response
+                responseText = getDemoResponse(inputText);
+            }
             const modelMessage: Content = { role: 'model', parts: [{ text: responseText }] };
             setMessages(prev => [...prev, modelMessage]);
         } catch (err) {
