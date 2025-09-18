@@ -20,43 +20,104 @@
       body {
         font-family: 'Cairo', sans-serif;
       }
+      .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        margin: 20px auto;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
-    <!-- Babel for in-browser JSX/TS transpilation -->
-    <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.1.1/client",
-    "@google/genai": "https://esm.sh/@google/genai@0.14.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/"
-  }
-}
-</script>
   </head>
   <body class="bg-gray-100 dark:bg-gray-900">
-    <div id="root"></div>
+    <div id="root">
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+        <div class="loading-spinner"></div>
+        <p style="margin-top: 20px; color: #666;">جاري تحميل التطبيق...</p>
+      </div>
+    </div>
+    
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <script>
-      // Add error handling for module loading
+      // Global error handling
       window.addEventListener('error', function(e) {
-        console.error('Script error:', e.error);
+        console.error('Global error:', e.error);
+        document.getElementById('root').innerHTML = `
+          <div style="padding: 20px; text-align: center; color: red;">
+            <h2>خطأ في تحميل التطبيق</h2>
+            <p>حدث خطأ أثناء تحميل التطبيق. يرجى إعادة تحميل الصفحة.</p>
+            <button onclick="location.reload()" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">إعادة تحميل</button>
+          </div>
+        `;
       });
+      
       window.addEventListener('unhandledrejection', function(e) {
         console.error('Unhandled promise rejection:', e.reason);
       });
     </script>
-    <!-- Change script type to text/babel for Babel to transpile it -->
-    <script type="text/babel" data-type="module" src="/index.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          }, err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-        });
+    
+    <!-- Main App Script -->
+    <script type="text/babel">
+      const { useState, useEffect, useContext, createContext, useMemo, useCallback, useRef } = React;
+      const { createRoot } = ReactDOM;
+      
+      // Simple demo app to test if React is working
+      function DemoApp() {
+        const [count, setCount] = useState(0);
+        
+        return React.createElement('div', {
+          style: { 
+            padding: '20px', 
+            textAlign: 'center',
+            fontFamily: 'Cairo, sans-serif'
+          }
+        }, [
+          React.createElement('h1', { key: 'title' }, 'المفكر الصغير - العرض التوضيحي'),
+          React.createElement('p', { key: 'desc' }, 'هذا عرض توضيحي للتطبيق'),
+          React.createElement('button', {
+            key: 'btn',
+            onClick: () => setCount(count + 1),
+            style: {
+              padding: '10px 20px',
+              background: '#3498db',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              margin: '10px'
+            }
+          }, `عدد النقرات: ${count}`),
+          React.createElement('div', { key: 'info' }, [
+            React.createElement('p', { key: 'p1' }, 'هذا التطبيق يعمل في وضع العرض التوضيحي'),
+            React.createElement('p', { key: 'p2' }, 'للحصول على الوظائف الكاملة، يحتاج المطور إلى إضافة مفتاح API')
+          ])
+        ]);
+      }
+      
+      // Initialize the app
+      try {
+        const root = createRoot(document.getElementById('root'));
+        root.render(React.createElement(DemoApp));
+      } catch (error) {
+        console.error('Failed to render app:', error);
+        document.getElementById('root').innerHTML = `
+          <div style="padding: 20px; text-align: center; color: red;">
+            <h2>فشل في تحميل التطبيق</h2>
+            <p>خطأ: ${error.message}</p>
+          </div>
+        `;
       }
     </script>
   </body>
